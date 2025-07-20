@@ -14,7 +14,7 @@
 		<AnalyzerLanguage>cs</AnalyzerLanguage>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 
-		<Version>1.0.0-beta4.250310.1</Version>
+		<Version>1.0.0-beta4.250720.0</Version>
 		<Authors>SourceGeneration</Authors>
 		<Description>ChangeTracking is a object change tracking and state management framework based on Source Generator, supports AOT compilation.</Description>
 		<RepositoryUrl>https://github.com/SourceGeneration/ChangeTracking</RepositoryUrl>
