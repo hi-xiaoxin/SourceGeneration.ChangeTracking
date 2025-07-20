@@ -217,7 +217,8 @@ public partial class ChanageTrackingSourceGenerator : IIncrementalGenerator
             }
             else
             {
-                builder.AppendBlock($"protected virtual void __AcceptChanges()", () =>
+                var virtual_flags = typeProxy.IsSealed ? string.Empty : "virtual ";
+                builder.AppendBlock($"protected {virtual_flags}void __AcceptChanges()", () =>
                 {
                     builder.AppendBlock("if (__cascadingChanged)", () =>
                     {
@@ -473,8 +474,8 @@ public partial class ChanageTrackingSourceGenerator : IIncrementalGenerator
         {
             name = type.Name;
         }
-
-        TypeDefinition typeProxy = new(name, type.MetadataName, type.GetNamespace(), type.IsRecord);
+        
+        TypeDefinition typeProxy = new(name, type.MetadataName, type.GetNamespace(), type.IsRecord, type.IsSealed);
 
         typeProxy.ContainerTypes.AddRange(containers);
 
@@ -698,12 +699,13 @@ public partial class ChanageTrackingSourceGenerator : IIncrementalGenerator
         }
     }
 
-    private sealed class TypeDefinition(string name, string metadataName, string? ns, bool isRecord)
+    private sealed class TypeDefinition(string name, string metadataName, string? ns, bool isRecord, bool isSealed)
     {
         public readonly string? Namespace = ns;
         public readonly string Name = name;
         public readonly string MetadataName = metadataName;
         public readonly bool IsRecord = isRecord;
+        public readonly bool IsSealed = isSealed;
 
         public bool NotifyPropertyChanged;
         public bool NotifyPropertyChanging;
