@@ -141,6 +141,8 @@ public partial class ChanageTrackingSourceGenerator : IIncrementalGenerator
 
         builder.AppendBlock($"partial {typekind} {typeProxy.Name}{interfaces}", () =>
         {
+            var modifier = typeProxy.IsSealed ? "private" : "protected";
+
             if (!typeProxy.BaseChangeTracking)
             {
                 if (!typeProxy.NotifyPropertyChanging)
@@ -152,8 +154,8 @@ public partial class ChanageTrackingSourceGenerator : IIncrementalGenerator
                 if (!typeProxy.NotifyCollectionChanged)
                     builder.AppendLine("public event global::System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanged;");
 
-                builder.AppendLine("protected bool __cascadingChanged;");
-                builder.AppendLine("protected bool __baseChanged;");
+                builder.AppendLine($"{modifier} bool __cascadingChanged;");
+                builder.AppendLine($"{modifier} bool __baseChanged;");
                 builder.AppendLine();
 
                 builder.AppendLine("bool global::System.ComponentModel.IChangeTracking.IsChanged => __baseChanged || __cascadingChanged;");
@@ -161,33 +163,33 @@ public partial class ChanageTrackingSourceGenerator : IIncrementalGenerator
                 builder.AppendLine($"bool global::{RootNamespace}.ICascadingChangeTracking.IsBaseChanged => __baseChanged;");
 
                 builder.AppendLine();
-                builder.AppendBlock("protected void OnPropertyChanging(string propertyName)", () =>
+                builder.AppendBlock($"{modifier} void OnPropertyChanging(string propertyName)", () =>
                 {
                     builder.AppendLine("PropertyChanging?.Invoke(this, new global::System.ComponentModel.PropertyChangingEventArgs(propertyName));");
                 });
 
                 builder.AppendLine();
-                builder.AppendBlock("protected void OnPropertyChanging(object sender, global::System.ComponentModel.PropertyChangingEventArgs e)", () =>
+                builder.AppendBlock($"{modifier} void OnPropertyChanging(object sender, global::System.ComponentModel.PropertyChangingEventArgs e)", () =>
                 {
                     builder.AppendLine("PropertyChanging?.Invoke(sender, e);");
                 });
 
                 builder.AppendLine();
-                builder.AppendBlock("protected void OnPropertyChanged(string propertyName)", () =>
+                builder.AppendBlock($"{modifier} void OnPropertyChanged(string propertyName)", () =>
                 {
                     builder.AppendLine("__baseChanged = true;");
                     builder.AppendLine("PropertyChanged?.Invoke(this, new global::System.ComponentModel.PropertyChangedEventArgs(propertyName));");
                 });
 
                 builder.AppendLine();
-                builder.AppendBlock("protected void OnPropertyChanged(object sender, global::System.ComponentModel.PropertyChangedEventArgs e)", () =>
+                builder.AppendBlock($"{modifier} void OnPropertyChanged(object sender, global::System.ComponentModel.PropertyChangedEventArgs e)", () =>
                 {
                     builder.AppendLine("__cascadingChanged = true;");
                     builder.AppendLine("PropertyChanged?.Invoke(sender, e);");
                 });
 
                 builder.AppendLine();
-                builder.AppendBlock("protected void OnCollectionChanged(object sender, global::System.Collections.Specialized.NotifyCollectionChangedEventArgs e)", () =>
+                builder.AppendBlock($"{modifier} void OnCollectionChanged(object sender, global::System.Collections.Specialized.NotifyCollectionChangedEventArgs e)", () =>
                 {
                     builder.AppendLine("__cascadingChanged = true;");
                     builder.AppendLine("CollectionChanged?.Invoke(sender, e);");
@@ -198,7 +200,7 @@ public partial class ChanageTrackingSourceGenerator : IIncrementalGenerator
 
             if (typeProxy.BaseChangeTracking)
             {
-                builder.AppendBlock($"protected override void __AcceptChanges()", () =>
+                builder.AppendBlock($"{modifier} override void __AcceptChanges()", () =>
                 {
                     builder.AppendBlock("if (__cascadingChanged)", () =>
                     {
@@ -218,7 +220,7 @@ public partial class ChanageTrackingSourceGenerator : IIncrementalGenerator
             else
             {
                 var virtual_flags = typeProxy.IsSealed ? string.Empty : "virtual ";
-                builder.AppendBlock($"protected {virtual_flags}void __AcceptChanges()", () =>
+                builder.AppendBlock($"{modifier} {virtual_flags}void __AcceptChanges()", () =>
                 {
                     builder.AppendBlock("if (__cascadingChanged)", () =>
                     {
