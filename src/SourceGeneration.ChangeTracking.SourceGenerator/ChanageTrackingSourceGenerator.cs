@@ -141,7 +141,8 @@ public partial class ChanageTrackingSourceGenerator : IIncrementalGenerator
 
         builder.AppendBlock($"partial {typekind} {typeProxy.Name}{interfaces}", () =>
         {
-            var modifier = typeProxy.IsSealed ? "private" : "protected";
+            
+            var modifier = (!typeProxy.BaseChangeTracking && typeProxy.IsSealed) ? "private" : "protected";
 
             if (!typeProxy.BaseChangeTracking)
             {
