@@ -31,3 +31,21 @@ public partial class DerivedType :AbstractType
 {
     public partial int B { get; set; }
 }
+
+
+[ChangeTracking]
+public sealed partial class SealedDerivedType : AbstractType
+{
+    public partial int B { get; set; }
+}
+
+public class AbstractType2
+{
+    public int A { get; set; }
+}
+
+[ChangeTracking]
+public sealed partial class SealedDerivedType2 : AbstractType2
+{
+    public partial int B { get; set; }
+}
