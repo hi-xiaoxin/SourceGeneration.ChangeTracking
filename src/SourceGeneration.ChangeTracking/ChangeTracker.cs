@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -113,6 +111,16 @@ public class ChangeTracker<TState> : IChangeTracker<TState> where TState : class
         return new Disposable(() => _subscribers = _subscribers.Remove(subscriber));
     }
 
+    public IDisposable OnChange(int index, Action<TState> subscriber)
+    {
+        if (index >= _subscribers.Length)
+            return OnChange(subscriber);
+
+        if (index < 0) index = 0;
+        _subscribers = _subscribers.Insert(index, subscriber);
+        return new Disposable(() => _subscribers = _subscribers.Remove(subscriber));
+    }
+
     public void Dispose()
     {
         _subscribers = _subscribers.Clear();
@@ -159,6 +167,7 @@ public class ChangeTracker<TState> : IChangeTracker<TState> where TState : class
             _changed = false;
             _innerSubscription?.AcceptChanges();
         }
+
         public void Dispose() => _innerSubscription?.Dispose();
 
         public void OnCompleted() { }
