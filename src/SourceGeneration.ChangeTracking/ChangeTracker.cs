@@ -104,6 +104,7 @@ public class ChangeTracker<TState> : IChangeTracker<TState> where TState : class
     }
 
     public IDisposable OnChange(Action subscriber) => OnChange(_ => subscriber());
+    public IDisposable OnChange(int index, Action subscriber) => OnChange(index, _ => subscriber());
 
     public IDisposable OnChange(Action<TState> subscriber)
     {

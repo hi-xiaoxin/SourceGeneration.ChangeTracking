@@ -7,6 +7,7 @@ namespace SourceGeneration.ChangeTracking;
 public interface IChangeTracker : IDisposable
 {
     IDisposable OnChange(Action subscriber);
+    IDisposable OnChange(int index, Action subscriber);
     void AcceptChanges();
 }
 
