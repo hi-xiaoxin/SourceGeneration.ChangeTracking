@@ -210,7 +210,7 @@ public class ChangeTracker<TState> : IChangeTracker<TState> where TState : class
                 Action<IEnumerable<TItem>>? subscriber,
                 ChangeTrackingScope scope)
             {
-                _query = new ChangeTrackingListQuery<TCollection, TItem>(value, predicate);
+                _query = new ChangeTrackingListQuery<TCollection, TItem>(value, predicate, scope == ChangeTrackingScope.Cascading);
                 _subscriber = subscriber;
                 _scope = scope;
                 _subscriber?.Invoke(_query);
@@ -230,6 +230,10 @@ public class ChangeTracker<TState> : IChangeTracker<TState> where TState : class
                 if (_scope == ChangeTrackingScope.Always)
                 {
                     push = true;
+                }
+                else if(_scope == ChangeTrackingScope.Instance)
+                {
+                    push = false;
                 }
                 else if (_scope == ChangeTrackingScope.InstanceProperty)
                 {
