@@ -44,14 +44,14 @@ internal class ChangeTrackingListQuery<TCollection, TItem> : IChangeTrackingList
         }
     }
 
-    public ChangeTrackingListQuery(TCollection collection, Func<TItem, bool> predicate)
+    public ChangeTrackingListQuery(TCollection collection, Func<TItem, bool> predicate, bool cascading)
     {
         _predicate = predicate;
         _collection = collection;
 
         _collection.CollectionChanged += OnCollectionChanged;
 
-        if (_collection is INotifyPropertyChanged propertyChanged)
+        if (cascading && _collection is INotifyPropertyChanged propertyChanged)
         {
             propertyChanged.PropertyChanged += OnItemPropertyChanged;
         }
@@ -59,6 +59,9 @@ internal class ChangeTrackingListQuery<TCollection, TItem> : IChangeTrackingList
 
     private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
+        if (_cascadingChanged)
+            return;
+
         if (sender is TItem item && _predicate(item))
         {
             _cascadingChanged = true;
@@ -67,22 +70,23 @@ internal class ChangeTrackingListQuery<TCollection, TItem> : IChangeTrackingList
 
     private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
+        if (_baseChanged)
+            return;
+
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
             _baseChanged = HasChange(e.NewItems);
         }
-
-        if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
+        else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
         {
             _baseChanged = HasChange(e.OldItems);
 
         }
-        if (e.Action == NotifyCollectionChangedAction.Reset && e.OldItems != null)
+        else if (e.Action == NotifyCollectionChangedAction.Reset && e.OldItems != null)
         {
             _baseChanged = HasChange(e.OldItems);
         }
-
-        if (e.Action == NotifyCollectionChangedAction.Replace)
+        else if (e.Action == NotifyCollectionChangedAction.Replace)
         {
             if (e.OldItems != null)
             {
