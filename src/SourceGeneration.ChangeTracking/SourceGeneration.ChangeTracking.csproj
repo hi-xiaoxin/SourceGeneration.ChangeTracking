@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<LangVersion>12</LangVersion>
 
-		<Version>1.0.3</Version>
+		<Version>1.0.4</Version>
 		<Authors>SourceGeneration</Authors>
 		<Description>ChangeTracking is a object change tracking and state management framework based on Source Generator, supports AOT compilation.</Description>
 		<RepositoryUrl>https://github.com/SourceGeneration/ChangeTracking</RepositoryUrl>
